@@ -61,13 +61,9 @@ pub fn part2(input: &str) -> String {
         .collect()
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn part1_test() {
-        let input = "    [D]    
+#[test]
+fn part1_test() {
+    let input = "    [D]    
 [N] [C]    
 [Z] [M] [P]
  1   2   3 
@@ -76,6 +72,5 @@ move 1 from 2 to 1
 move 3 from 1 to 3
 move 2 from 2 to 1
 move 1 from 1 to 2";
-        assert_eq!(part1(&input), "CMZ");
-    }
+    assert_eq!(part1(&input), "CMZ");
 }
