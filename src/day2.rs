@@ -1,9 +1,10 @@
-use advent_of_code::simple_parse::parse_lines;
+use advent_of_code::parse::{parsers, Parser};
 
 #[allow(dead_code)]
 pub fn part1(input: &str) -> usize {
-    parse_lines(input, |s| {
-        Some(match s {
+    parsers::char_any()
+        .repeat(3)
+        .map(|s| match s.collect::<String>().as_str() {
             "A X" => 1 + 3,
             "A Y" => 2 + 6,
             "A Z" => 3 + 0,
@@ -13,16 +14,20 @@ pub fn part1(input: &str) -> usize {
             "C X" => 1 + 6,
             "C Y" => 2 + 0,
             "C Z" => 3 + 3,
-            _ => panic!("Failed to parse {}", s),
+            _ => panic!("Failed to parse"),
         })
-    })
-    .sum()
+        .many_lines("\n")
+        .parse(input)
+        .finish()
+        .unwrap()
+        .sum()
 }
 
 #[allow(dead_code)]
 pub fn part2(input: &str) -> usize {
-    parse_lines(input, |s| {
-        Some(match s {
+    parsers::char_any()
+        .repeat(3)
+        .map(|s| match s.collect::<String>().as_str() {
             "A X" => 3 + 0,
             "A Y" => 1 + 3,
             "A Z" => 2 + 6,
@@ -32,8 +37,11 @@ pub fn part2(input: &str) -> usize {
             "C X" => 2 + 0,
             "C Y" => 3 + 3,
             "C Z" => 1 + 6,
-            _ => panic!("Failed to parse {}", s),
+            _ => panic!("Failed to parse"),
         })
-    })
-    .sum()
+        .many_lines("\n")
+        .parse(input)
+        .finish()
+        .unwrap()
+        .sum()
 }

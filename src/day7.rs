@@ -1,3 +1,4 @@
+use advent_of_code::parse::{parsers, Parser};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
@@ -42,41 +43,75 @@ fn directory_sizes(
     map
 }
 
-fn populate_directory(input: &str) -> HashMap<PathBuf, Vec<File>> {
+#[derive(Debug, PartialEq, Eq)]
+enum FileSpec {
+    File { name: String, size: usize },
+    Directory { name: String },
+}
+
+#[derive(Debug, PartialEq, Eq)]
+enum Command {
+    Ls(Vec<FileSpec>),
+    Cd(String),
+}
+
+fn populate_directory(commands: Vec<Command>) -> HashMap<PathBuf, Vec<File>> {
     let mut directories: HashMap<PathBuf, Vec<File>> = HashMap::new();
     let mut current_directory = PathBuf::new();
-    input.lines().for_each(|line| {
-        let tokens: Vec<&str> = line.split(" ").collect();
-        match tokens[0] {
-            "$" => {
-                if tokens[1] == "cd" {
-                    if tokens[2] == ".." {
-                        current_directory = current_directory.parent().unwrap().to_owned();
-                    } else {
-                        current_directory = current_directory.join(tokens[2]);
-                    }
-                }
+    commands.into_iter().for_each(|command| match command {
+        Command::Cd(s) => {
+            current_directory = if s.as_str() == ".." {
+                current_directory.parent().unwrap().to_owned()
+            } else {
+                current_directory.join(s)
             }
-            "dir" => directories
-                .entry(current_directory.clone())
-                .or_insert_with(Vec::new)
-                .push(File::directory(&current_directory, tokens[1])),
-            size => directories
-                .entry(current_directory.clone())
-                .or_insert_with(Vec::new)
-                .push(File::file(
-                    &current_directory,
-                    tokens[1],
-                    size.parse::<usize>().unwrap(),
-                )),
         }
+        Command::Ls(v) => v.into_iter().for_each(|file_spec| {
+            directories
+                .entry(current_directory.clone())
+                .or_insert_with(Vec::new)
+                .push(match file_spec {
+                    FileSpec::Directory { name } => File::directory(&current_directory, &name),
+                    FileSpec::File { name, size } => File::file(&current_directory, &name, size),
+                })
+        }),
     });
     directories
 }
 
+macro_rules! parse {
+    ($input: ident) => {
+        parsers::tag("$ ")
+            .ignore(
+                parsers::tag("ls\n")
+                    .ignore(
+                        parsers::tag("dir ")
+                            .ignore(
+                                parsers::many_chars(|c| c != '\n')
+                                    .map(|name| FileSpec::Directory { name }),
+                            )
+                            .or(parsers::number()
+                                .pair(" ", parsers::many_chars(|c| c != '\n'))
+                                .map(|(size, name)| FileSpec::File { name, size }))
+                            .many_lines("\n")
+                            .map(|iter| Command::Ls(iter.collect::<Vec<FileSpec>>())),
+                    )
+                    .or(parsers::tag("cd ")
+                        .ignore(parsers::many_chars(|c| c != '\n'))
+                        .line("\n")
+                        .map(|s| Command::Cd(s))),
+            )
+            .many()
+            .parse($input)
+            .finish()
+            .unwrap()
+            .collect::<Vec<Command>>()
+    };
+}
+
 #[allow(dead_code)]
 pub fn part1(input: &str) -> usize {
-    let directories = populate_directory(input);
+    let directories = populate_directory(parse!(input));
     let directory_sizes = directory_sizes(Path::new("/"), &directories);
     directory_sizes
         .into_iter()
@@ -86,7 +121,7 @@ pub fn part1(input: &str) -> usize {
 
 #[allow(dead_code)]
 pub fn part2(input: &str) -> usize {
-    let directories = populate_directory(input);
+    let directories = populate_directory(parse!(input));
     let directory_sizes = directory_sizes(Path::new("/"), &directories);
     let threshold = 30000000 - (70000000 - directory_sizes.get(&PathBuf::from("/")).unwrap());
     directory_sizes
@@ -94,6 +129,25 @@ pub fn part2(input: &str) -> usize {
         .filter_map(|(_, size)| if size > threshold { Some(size) } else { None })
         .min()
         .unwrap()
+}
+
+#[test]
+fn simple() {
+    let input = "$ cd /
+";
+    let result = parsers::tag("$ ")
+        .ignore(
+            parsers::tag("cd ")
+                .ignore(parsers::many_chars(|c| c != '\n'))
+                .line("\n")
+                .map(|s| Command::Cd(s)),
+        )
+        .many()
+        .parse(input)
+        .finish()
+        .unwrap()
+        .collect::<Vec<Command>>();
+    assert_eq!(result, vec![Command::Cd("/".to_owned())])
 }
 
 #[test]
@@ -120,6 +174,7 @@ $ ls
 4060174 j
 8033020 d.log
 5626152 d.ext
-7214296 k";
+7214296 k
+";
     assert_eq!(part1(input), 95437);
 }

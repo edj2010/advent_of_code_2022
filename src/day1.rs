@@ -1,8 +1,13 @@
-use advent_of_code::simple_parse::parse_chunks;
+use advent_of_code::parse::{parsers, Parser};
 
 #[allow(dead_code)]
 pub fn part1(input: &str) -> usize {
-    parse_chunks(input, |s| s.parse::<usize>().ok())
+    parsers::number()
+        .many_lines("\n")
+        .list("\n")
+        .parse(input)
+        .finish()
+        .unwrap()
         .map(|l| l.sum())
         .max()
         .unwrap()
@@ -10,7 +15,12 @@ pub fn part1(input: &str) -> usize {
 
 #[allow(dead_code)]
 pub fn part2(input: &str) -> usize {
-    let mut calories: Vec<usize> = parse_chunks(input, |s| s.parse::<usize>().ok())
+    let mut calories: Vec<usize> = parsers::number()
+        .many_lines("\n")
+        .list("\n")
+        .parse(input)
+        .finish()
+        .unwrap()
         .map(|l| l.sum())
         .collect();
     calories.sort();

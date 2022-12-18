@@ -1,38 +1,49 @@
-fn parse(input: &str) -> (Vec<Vec<char>>, Vec<(usize, usize, usize)>) {
-    let mut iter = input.split("\n\n").map(|s| s.lines());
-    let crates = iter.next().unwrap().collect::<Vec<&str>>();
-    let instrs = iter.next().unwrap();
+use advent_of_code::parse::{parsers, Parser};
 
-    (
-        (1_usize..crates[0].len())
-            .step_by(4)
-            .map(|crate_idx| {
-                (0..crates.len())
-                    .rev()
-                    .skip(1)
-                    .map(|row_idx| crates[row_idx].chars().nth(crate_idx).unwrap())
-                    .filter(|c| *c != ' ')
-                    .collect::<Vec<char>>()
-            })
-            .collect(),
-        instrs
-            .map(|s| {
-                let (_, r) = s.split_once("move ").unwrap();
-                let (a, r) = r.split_once(" from ").unwrap();
-                let (b, c) = r.split_once(" to ").unwrap();
-                (
-                    a.parse::<usize>().unwrap(),
-                    b.parse::<usize>().unwrap() - 1,
-                    c.parse::<usize>().unwrap() - 1,
-                )
-            })
-            .collect(),
-    )
+macro_rules! parse {
+    ($input: ident) => {{
+        let (crates, instrs) = parsers::char('[')
+            .ignore(parsers::char_any())
+            .skip(parsers::char_any())
+            .map(|c: char| Some(c))
+            .or(parsers::tag("   ").map(|_| Option::<char>::None))
+            .list(" ")
+            .list("\n")
+            .skip(parsers::many_chars(|c| c != '\n').line("\n").repeat(2))
+            .pair(
+                "\n",
+                parsers::tag("move ")
+                    .ignore(parsers::number())
+                    .skip(parsers::tag(" from "))
+                    .and_then(parsers::number())
+                    .skip(parsers::tag(" to "))
+                    .and_then(parsers::number())
+                    .skip(parsers::char('\n'))
+                    .map(|((a, b), c)| (a, b - 1, c - 1))
+                    .many(),
+            )
+            .parse($input)
+            .finish()
+            .unwrap();
+        let crates: Vec<Vec<Option<char>>> =
+            crates.map(|v| v.collect::<Vec<Option<char>>>()).collect();
+        (
+            (0..crates[0].len())
+                .map(|col_idx| {
+                    (0..crates.len())
+                        .rev()
+                        .filter_map(|row_idx| crates[row_idx][col_idx])
+                        .collect::<Vec<char>>()
+                })
+                .collect::<Vec<Vec<char>>>(),
+            instrs,
+        )
+    }};
 }
 
 #[allow(dead_code)]
 pub fn part1(input: &str) -> String {
-    let (mut crates, instrs) = parse(input);
+    let (mut crates, instrs) = parse!(input);
     for (count, from, to) in instrs {
         for _ in 0..count {
             let popped = crates[from].pop().unwrap();
@@ -48,7 +59,7 @@ pub fn part1(input: &str) -> String {
 
 #[allow(dead_code)]
 pub fn part2(input: &str) -> String {
-    let (mut crates, instrs) = parse(input);
+    let (mut crates, instrs) = parse!(input);
     for (count, from, to) in instrs {
         let at = crates[from].len() - count;
         let popped = crates[from].split_off(at);
@@ -62,7 +73,7 @@ pub fn part2(input: &str) -> String {
 }
 
 #[test]
-fn part1_test() {
+fn test_part1() {
     let input = "    [D]    
 [N] [C]    
 [Z] [M] [P]
@@ -71,6 +82,7 @@ fn part1_test() {
 move 1 from 2 to 1
 move 3 from 1 to 3
 move 2 from 2 to 1
-move 1 from 1 to 2";
+move 1 from 1 to 2
+";
     assert_eq!(part1(&input), "CMZ");
 }

@@ -1,4 +1,7 @@
-use advent_of_code::grid::{Grid, GridPoint, EAST, NORTH, SOUTH, WEST};
+use advent_of_code::{
+    grid::{Grid, GridPoint, EAST, NORTH, SOUTH, WEST},
+    parse::{parsers, Parser},
+};
 
 fn mark_visible<I: Iterator<Item = GridPoint>>(
     it: I,
@@ -15,15 +18,22 @@ fn mark_visible<I: Iterator<Item = GridPoint>>(
     }
 }
 
+macro_rules! parse {
+    ($input: ident) => {
+        parsers::chars(|c| c.is_numeric())
+            .many()
+            .many_lines("\n")
+            .parse($input)
+            .finish()
+            .unwrap()
+            .map(|l| l.collect::<Vec<char>>())
+            .collect::<Vec<Vec<char>>>()
+    };
+}
+
 #[allow(dead_code)]
 pub fn part1(input: &str) -> usize {
-    let grid = Grid::of_vec_of_vecs(
-        input
-            .lines()
-            .map(|line| line.chars().collect::<Vec<char>>())
-            .collect::<Vec<Vec<char>>>(),
-    )
-    .unwrap();
+    let grid = Grid::of_vec_of_vecs(parse!(input)).unwrap();
     let rows = grid.rows();
     let cols = grid.cols();
     let mut visible: Grid<usize> = Grid::init(0, rows, cols);
@@ -87,13 +97,7 @@ fn mark_visible_direction<I: Iterator<Item = GridPoint>>(
 
 #[allow(dead_code)]
 pub fn part2(input: &str) -> usize {
-    let grid = Grid::of_vec_of_vecs(
-        input
-            .lines()
-            .map(|line| line.chars().collect::<Vec<char>>())
-            .collect::<Vec<Vec<char>>>(),
-    )
-    .unwrap();
+    let grid = Grid::of_vec_of_vecs(parse!(input)).unwrap();
     let rows = grid.rows();
     let cols = grid.cols();
     let mut visible: Grid<Tree> = Grid::init(Tree::new(), rows, cols);
@@ -132,7 +136,8 @@ fn test_part1() {
 25512
 65332
 33549
-35390";
+35390
+";
     assert_eq!(part1(input), 21);
 }
 
@@ -142,6 +147,7 @@ fn test_part2() {
 25512
 65332
 33549
-35390";
+35390
+";
     assert_eq!(part2(input), 8);
 }
