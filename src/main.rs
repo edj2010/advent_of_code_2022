@@ -6,6 +6,8 @@ use std::path::Path;
 mod day1;
 mod day10;
 mod day11;
+mod day12;
+mod day13;
 mod day2;
 mod day3;
 mod day4;
@@ -21,9 +23,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         &fs::read_to_string("../session.cookie").expect("failed to read session id"),
         Path::new("inputs"),
     )?;
-    let input = client.query_question_input(10)?;
+    let input = client.query_question_input(13)?;
 
-    println!("{}", day10::part2(&input));
+    println!("{}", day13::part2(&input));
     Ok(())
 }
 
@@ -99,5 +101,8 @@ day10, day10_test, 10, 16880, "
 ###..#.#..####..#...####....#.#..#.###..
 #.#..#.#..#..#.#....#..#.#..#.#..#.#.#..
 #..#.#..#.#..#.####.#..#..##..###..#..#.";
+day11, day11_test, 11, 99840, 20683044837;
 
-day11, day11_test, 11, 99840, 20683044837;);
+day12, day12_test, 12, 391, 386;
+
+day13, day13_test, 13, 5825, 24477;);
