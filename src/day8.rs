@@ -3,7 +3,7 @@ use advent_of_code::{
     parse::{parsers, Parser},
 };
 
-fn mark_visible<I: Iterator<Item = GridPoint>>(
+fn mark_visible<I: Iterator<Item = GridPoint<usize, isize>>>(
     it: I,
     grid: &Grid<char>,
     visible: &mut Grid<usize>,
@@ -39,17 +39,41 @@ pub fn part1(input: &str) -> usize {
     let mut visible: Grid<usize> = Grid::init(0, rows, cols);
 
     GridPoint::new(0, 0)
-        .traverse_by(SOUTH, rows, cols)
-        .for_each(|start| mark_visible(start.traverse_by(EAST, rows, cols), &grid, &mut visible));
+        .traverse_by(SOUTH, 0, rows, 0, cols)
+        .for_each(|start| {
+            mark_visible(
+                start.traverse_by(EAST, 0, rows, 0, cols),
+                &grid,
+                &mut visible,
+            )
+        });
     GridPoint::new(0, 0)
-        .traverse_by(EAST, rows, cols)
-        .for_each(|start| mark_visible(start.traverse_by(SOUTH, rows, cols), &grid, &mut visible));
+        .traverse_by(EAST, 0, rows, 0, cols)
+        .for_each(|start| {
+            mark_visible(
+                start.traverse_by(SOUTH, 0, rows, 0, cols),
+                &grid,
+                &mut visible,
+            )
+        });
     GridPoint::new(rows - 1, 0)
-        .traverse_by(SOUTH, rows, cols)
-        .for_each(|start| mark_visible(start.traverse_by(WEST, rows, cols), &grid, &mut visible));
+        .traverse_by(SOUTH, 0, rows, 0, cols)
+        .for_each(|start| {
+            mark_visible(
+                start.traverse_by(WEST, 0, rows, 0, cols),
+                &grid,
+                &mut visible,
+            )
+        });
     GridPoint::new(0, cols - 1)
-        .traverse_by(EAST, rows, cols)
-        .for_each(|start| mark_visible(start.traverse_by(NORTH, rows, cols), &grid, &mut visible));
+        .traverse_by(EAST, 0, rows, 0, cols)
+        .for_each(|start| {
+            mark_visible(
+                start.traverse_by(NORTH, 0, rows, 0, cols),
+                &grid,
+                &mut visible,
+            )
+        });
 
     visible.into_iter().sum()
 }
@@ -71,7 +95,7 @@ impl Tree {
     }
 }
 
-fn mark_visible_direction<I: Iterator<Item = GridPoint>>(
+fn mark_visible_direction<I: Iterator<Item = GridPoint<usize, isize>>>(
     it: I,
     which: usize,
     grid: &Grid<char>,
@@ -103,24 +127,44 @@ pub fn part2(input: &str) -> usize {
     let mut visible: Grid<Tree> = Grid::init(Tree::new(), rows, cols);
 
     GridPoint::new(0, 0)
-        .traverse_by(SOUTH, rows, cols)
+        .traverse_by(SOUTH, 0, rows, 0, cols)
         .for_each(|start| {
-            mark_visible_direction(start.traverse_by(EAST, rows, cols), 0, &grid, &mut visible)
+            mark_visible_direction(
+                start.traverse_by(EAST, 0, rows, 0, cols),
+                0,
+                &grid,
+                &mut visible,
+            )
         });
     GridPoint::new(0, 0)
-        .traverse_by(EAST, rows, cols)
+        .traverse_by(EAST, 0, rows, 0, cols)
         .for_each(|start| {
-            mark_visible_direction(start.traverse_by(SOUTH, rows, cols), 1, &grid, &mut visible)
+            mark_visible_direction(
+                start.traverse_by(SOUTH, 0, rows, 0, cols),
+                1,
+                &grid,
+                &mut visible,
+            )
         });
     GridPoint::new(rows - 1, 0)
-        .traverse_by(SOUTH, rows, cols)
+        .traverse_by(SOUTH, 0, rows, 0, cols)
         .for_each(|start| {
-            mark_visible_direction(start.traverse_by(WEST, rows, cols), 2, &grid, &mut visible)
+            mark_visible_direction(
+                start.traverse_by(WEST, 0, rows, 0, cols),
+                2,
+                &grid,
+                &mut visible,
+            )
         });
     GridPoint::new(0, cols - 1)
-        .traverse_by(EAST, rows, cols)
+        .traverse_by(EAST, 0, rows, 0, cols)
         .for_each(|start| {
-            mark_visible_direction(start.traverse_by(NORTH, rows, cols), 3, &grid, &mut visible)
+            mark_visible_direction(
+                start.traverse_by(NORTH, 0, rows, 0, cols),
+                3,
+                &grid,
+                &mut visible,
+            )
         });
 
     visible

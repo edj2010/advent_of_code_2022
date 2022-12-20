@@ -4,6 +4,8 @@ use std::fs;
 use std::path::Path;
 
 mod day1;
+mod day10;
+mod day11;
 mod day2;
 mod day3;
 mod day4;
@@ -11,6 +13,7 @@ mod day5;
 mod day6;
 mod day7;
 mod day8;
+mod day9;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let client = AdventOfCode::init(
@@ -18,9 +21,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         &fs::read_to_string("../session.cookie").expect("failed to read session id"),
         Path::new("inputs"),
     )?;
-    let input = client.query_question_input(2)?;
+    let input = client.query_question_input(10)?;
 
-    println!("{}", day2::part1(&input));
+    println!("{}", day10::part2(&input));
     Ok(())
 }
 
@@ -87,4 +90,14 @@ day4, day4_test, 4, 534, 841;
 day5, day5_test, 5, "FJSRQCFTN", "CJVLJQPHS";
 day6, day6_test, 6, 1198, 3120;
 day7, day7_test, 7, 1513699, 7991939;
-day8, day8_test, 8, 1698, 672280);
+day8, day8_test, 8, 1698, 672280;
+day9, day9_test, 9, 6023, 2533;
+day10, day10_test, 10, 16880, "
+###..#..#..##..####..##....##.###..###..
+#..#.#.#..#..#....#.#..#....#.#..#.#..#.
+#..#.##...#..#...#..#..#....#.###..#..#.
+###..#.#..####..#...####....#.#..#.###..
+#.#..#.#..#..#.#....#..#.#..#.#..#.#.#..
+#..#.#..#.#..#.####.#..#..##..###..#..#.";
+
+day11, day11_test, 11, 99840, 20683044837;);
