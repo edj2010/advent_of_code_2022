@@ -1,8 +1,7 @@
-use std::collections::VecDeque;
-
 use advent_of_code::{
     grid::{Grid, GridPoint, PLUS_ADJACENT},
     parse::{parsers, Parser},
+    search::WeightedGraph,
 };
 
 macro_rules! parser {
@@ -20,33 +19,32 @@ macro_rules! parser {
     }};
 }
 
-fn shortest_distance<F: Fn(GridPoint<usize, isize>, GridPoint<usize, isize>) -> bool>(
+struct Mountain<F: Fn(u8, u8) -> bool> {
     map: Grid<u8>,
-    connected: F,
-    start_idx: GridPoint<usize, isize>,
-    end: u8,
-) -> usize {
-    let mut distance: Grid<Option<usize>> = Grid::init(None, map.rows(), map.cols());
-    distance.set(start_idx, Some(0)).unwrap();
-    let mut to_search: VecDeque<GridPoint<usize, isize>> = VecDeque::from([start_idx]);
-    while let Some(next) = to_search.pop_front() {
-        for adjacent in PLUS_ADJACENT
+    height_map: Grid<u8>,
+    adjacent_filter: F,
+}
+
+impl<F: Fn(u8, u8) -> bool> WeightedGraph<GridPoint<usize, isize>, usize> for Mountain<F> {
+    fn adjacent(
+        &self,
+        a: &GridPoint<usize, isize>,
+    ) -> impl Iterator<Item = GridPoint<usize, isize>> {
+        PLUS_ADJACENT
             .into_iter()
-            .filter_map(|delta| next.add_checked(delta, &0, &map.rows(), &0, &map.cols()))
-        {
-            if !connected(next, adjacent) || distance.get(adjacent).unwrap().is_some() {
-                continue;
-            }
-            distance
-                .set(adjacent, Some(distance.get(next).unwrap().unwrap() + 1))
-                .unwrap();
-            if map[adjacent] == end {
-                return distance.get(adjacent).unwrap().unwrap();
-            }
-            to_search.push_back(adjacent);
-        }
+            .filter_map(move |delta| {
+                a.add_checked(delta, &0, &self.map.rows(), &0, &self.map.cols())
+            })
+            .filter(move |other| {
+                (self.adjacent_filter)(self.height_map[*a], self.height_map[*other])
+            })
+            .collect::<Vec<GridPoint<usize, isize>>>()
+            .into_iter()
     }
-    0
+
+    fn weight(&self, _: &GridPoint<usize, isize>, _: &GridPoint<usize, isize>) -> usize {
+        1
+    }
 }
 
 #[allow(dead_code)]
@@ -67,12 +65,15 @@ pub fn part1(input: &str) -> usize {
     )
     .unwrap();
     let start_idx = map.find(&b'S').unwrap();
-    shortest_distance(
+    let graph = Mountain {
         map,
-        |next, adjacent| height_map[next] + 1 >= height_map[adjacent],
-        start_idx,
-        b'E',
-    )
+        height_map,
+        adjacent_filter: |a, b| a + 1 >= b,
+    };
+    graph
+        .shortest_distance(start_idx, 0, |end| graph.map[*end] == b'E')
+        .unwrap()
+        .1
 }
 
 #[allow(dead_code)]
@@ -93,12 +94,15 @@ pub fn part2(input: &str) -> usize {
     )
     .unwrap();
     let start_idx = map.find(&b'E').unwrap();
-    shortest_distance(
+    let graph = Mountain {
         map,
-        |next, adjacent| height_map[next] <= height_map[adjacent] + 1,
-        start_idx,
-        b'a',
-    )
+        height_map,
+        adjacent_filter: |a, b| a <= b + 1,
+    };
+    graph
+        .shortest_distance(start_idx, 0, |end| graph.map[*end] == b'a')
+        .unwrap()
+        .1
 }
 
 #[test]

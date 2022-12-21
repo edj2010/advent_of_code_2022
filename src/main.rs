@@ -1,3 +1,6 @@
+#![feature(return_position_impl_trait_in_trait)]
+#![allow(incomplete_features)]
+
 use advent_of_code::web_api::AdventOfCode;
 use std::error::Error;
 use std::fs;
