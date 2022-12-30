@@ -3,7 +3,7 @@ use advent_of_code::{
     parse::{parsers, Parser},
 };
 
-fn mark_visible<I: Iterator<Item = GridPoint<usize, isize>>>(
+fn mark_visible<I: Iterator<Item = GridPoint<usize>>>(
     it: I,
     grid: &Grid<char>,
     visible: &mut Grid<usize>,
@@ -57,19 +57,19 @@ pub fn part1(input: &str) -> usize {
             )
         });
     GridPoint::new(rows - 1, 0)
-        .traverse_by(SOUTH, 0, rows, 0, cols)
+        .traverse_by(EAST, 0, rows, 0, cols)
         .for_each(|start| {
             mark_visible(
-                start.traverse_by(WEST, 0, rows, 0, cols),
+                start.traverse_by(NORTH, 0, rows, 0, cols),
                 &grid,
                 &mut visible,
             )
         });
     GridPoint::new(0, cols - 1)
-        .traverse_by(EAST, 0, rows, 0, cols)
+        .traverse_by(SOUTH, 0, rows, 0, cols)
         .for_each(|start| {
             mark_visible(
-                start.traverse_by(NORTH, 0, rows, 0, cols),
+                start.traverse_by(WEST, 0, rows, 0, cols),
                 &grid,
                 &mut visible,
             )
@@ -95,7 +95,7 @@ impl Tree {
     }
 }
 
-fn mark_visible_direction<I: Iterator<Item = GridPoint<usize, isize>>>(
+fn mark_visible_direction<I: Iterator<Item = GridPoint<usize>>>(
     it: I,
     which: usize,
     grid: &Grid<char>,
@@ -147,20 +147,20 @@ pub fn part2(input: &str) -> usize {
             )
         });
     GridPoint::new(rows - 1, 0)
-        .traverse_by(SOUTH, 0, rows, 0, cols)
+        .traverse_by(EAST, 0, rows, 0, cols)
         .for_each(|start| {
             mark_visible_direction(
-                start.traverse_by(WEST, 0, rows, 0, cols),
+                start.traverse_by(NORTH, 0, rows, 0, cols),
                 2,
                 &grid,
                 &mut visible,
             )
         });
     GridPoint::new(0, cols - 1)
-        .traverse_by(EAST, 0, rows, 0, cols)
+        .traverse_by(SOUTH, 0, rows, 0, cols)
         .for_each(|start| {
             mark_visible_direction(
-                start.traverse_by(NORTH, 0, rows, 0, cols),
+                start.traverse_by(WEST, 0, rows, 0, cols),
                 3,
                 &grid,
                 &mut visible,

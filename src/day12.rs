@@ -25,25 +25,24 @@ struct Mountain<F: Fn(u8, u8) -> bool> {
     adjacent_filter: F,
 }
 
-impl<F: Fn(u8, u8) -> bool> WeightedGraph<GridPoint<usize, isize>, usize> for Mountain<F> {
-    fn adjacent(
-        &self,
-        a: &GridPoint<usize, isize>,
-    ) -> impl Iterator<Item = GridPoint<usize, isize>> {
-        PLUS_ADJACENT
-            .into_iter()
-            .filter_map(move |delta| {
-                a.add_checked(delta, &0, &self.map.rows(), &0, &self.map.cols())
-            })
-            .filter(move |other| {
-                (self.adjacent_filter)(self.height_map[*a], self.height_map[*other])
-            })
-            .collect::<Vec<GridPoint<usize, isize>>>()
-            .into_iter()
+impl<F: Fn(u8, u8) -> bool> WeightedGraph<GridPoint<usize>, usize> for Mountain<F> {
+    fn adjacent(&self, a: &GridPoint<usize>) -> Option<impl Iterator<Item = GridPoint<usize>>> {
+        Some(
+            PLUS_ADJACENT
+                .into_iter()
+                .filter_map(move |delta| {
+                    a.add_checked(delta, &0, &self.map.rows(), &0, &self.map.cols())
+                })
+                .filter(move |other| {
+                    (self.adjacent_filter)(self.height_map[*a], self.height_map[*other])
+                })
+                .collect::<Vec<GridPoint<usize>>>()
+                .into_iter(),
+        )
     }
 
-    fn weight(&self, _: &GridPoint<usize, isize>, _: &GridPoint<usize, isize>) -> usize {
-        1
+    fn weight(&self, _: &GridPoint<usize>, _: &GridPoint<usize>) -> Option<usize> {
+        Some(1)
     }
 }
 
@@ -71,7 +70,7 @@ pub fn part1(input: &str) -> usize {
         adjacent_filter: |a, b| a + 1 >= b,
     };
     graph
-        .shortest_distance(start_idx, 0, |end| graph.map[*end] == b'E')
+        .shortest_distance(start_idx, |end| graph.map[*end] == b'E', 0)
         .unwrap()
         .1
 }
@@ -100,7 +99,7 @@ pub fn part2(input: &str) -> usize {
         adjacent_filter: |a, b| a <= b + 1,
     };
     graph
-        .shortest_distance(start_idx, 0, |end| graph.map[*end] == b'a')
+        .shortest_distance(start_idx, |end| graph.map[*end] == b'a', 0)
         .unwrap()
         .1
 }

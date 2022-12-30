@@ -14,11 +14,11 @@ macro_rules! parse {
                 "\n",
                 parsers::tag("move ")
                     .ignore(parsers::number())
-                    .skip(parsers::tag(" from "))
+                    .skip_tag(" from ")
                     .and_then(parsers::number())
-                    .skip(parsers::tag(" to "))
+                    .skip_tag(" to ")
                     .and_then(parsers::number())
-                    .skip(parsers::char('\n'))
+                    .skip_tag("\n")
                     .map(|((a, b), c)| (a, b - 1, c - 1))
                     .many(),
             )

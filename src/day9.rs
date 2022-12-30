@@ -37,13 +37,13 @@ fn normalized_delta(d: GridPointDelta<isize>) -> GridPointDelta<isize> {
 
 #[allow(dead_code)]
 pub fn part1(input: &str) -> usize {
-    let mut head: GridPoint<isize, isize> = GridPoint::new(0, 0);
-    let mut tail: GridPoint<isize, isize> = GridPoint::new(0, 0);
-    let mut seen: HashSet<GridPoint<isize, isize>> = HashSet::from([tail]);
+    let mut head: GridPoint<isize> = GridPoint::new(0, 0);
+    let mut tail: GridPoint<isize> = GridPoint::new(0, 0);
+    let mut seen: HashSet<GridPoint<isize>> = HashSet::from([tail]);
     parse!(input).for_each(|(dir, count)| {
         (0..count).for_each(|_| {
             head = (head + dir).unwrap();
-            let delta = (head - tail).unwrap();
+            let delta = head.sub(tail).unwrap();
             if !(delta == ZERO || ADJACENT.contains(&delta)) {
                 tail = (tail + normalized_delta(delta)).unwrap();
                 seen.insert(tail);
@@ -55,13 +55,13 @@ pub fn part1(input: &str) -> usize {
 
 #[allow(dead_code)]
 pub fn part2(input: &str) -> usize {
-    let mut rope: [GridPoint<isize, isize>; 10] = [GridPoint::new(0, 0); 10];
-    let mut seen: HashSet<GridPoint<isize, isize>> = HashSet::from([rope[9]]);
+    let mut rope: [GridPoint<isize>; 10] = [GridPoint::new(0, 0); 10];
+    let mut seen: HashSet<GridPoint<isize>> = HashSet::from([rope[9]]);
     parse!(input).for_each(|(dir, count)| {
         (0..count).for_each(|_| {
             rope[0] = (rope[0] + dir).unwrap();
             for idx in 1..rope.len() {
-                let delta = (rope[idx - 1] - rope[idx]).unwrap();
+                let delta = rope[idx - 1].sub(rope[idx]).unwrap();
                 if !(delta == ZERO || ADJACENT.contains(&delta)) {
                     rope[idx] = (rope[idx] + normalized_delta(delta)).unwrap();
                 }

@@ -30,9 +30,9 @@ macro_rules! parse {
     ($input: ident) => {
         parsers::tag("Monkey ")
             .ignore(parsers::number())
-            .skip(parsers::tag(":\n  Starting items: "))
+            .skip_tag(":\n  Starting items: ")
             .and_then(parsers::number().list(", ").line("\n"))
-            .skip(parsers::tag("  Operation: new = old "))
+            .skip_tag("  Operation: new = old ")
             .and_then(
                 parsers::tag("+ ")
                     .ignore(parsers::number())
@@ -43,11 +43,11 @@ macro_rules! parse {
                     .or(parsers::tag("* old").map(|_| Operation::Square))
                     .line("\n"),
             )
-            .skip(parsers::tag("  Test: divisible by "))
+            .skip_tag("  Test: divisible by ")
             .and_then(parsers::number().line("\n"))
-            .skip(parsers::tag("    If true: throw to monkey "))
+            .skip_tag("    If true: throw to monkey ")
             .and_then(parsers::number().line("\n"))
-            .skip(parsers::tag("    If false: throw to monkey "))
+            .skip_tag("    If false: throw to monkey ")
             .and_then(parsers::number().line("\n"))
             .map(
                 |(((((_id, list), operation), divisor), true_target_id), false_target_id)| Monkey {
