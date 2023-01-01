@@ -7,7 +7,7 @@ use std::collections::VecDeque;
 enum Input {
     LeftParen,
     RightParen,
-    Number(usize),
+    Number(u32),
 }
 
 macro_rules! parse {

@@ -6,7 +6,7 @@ use advent_of_code::{
 fn mark_visible<I: Iterator<Item = GridPoint<usize>>>(
     it: I,
     grid: &Grid<char>,
-    visible: &mut Grid<usize>,
+    visible: &mut Grid<u32>,
 ) {
     let mut peak = ' ';
     for point in it {
@@ -32,11 +32,11 @@ macro_rules! parse {
 }
 
 #[allow(dead_code)]
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u32 {
     let grid = Grid::of_vec_of_vecs(parse!(input)).unwrap();
     let rows = grid.rows();
     let cols = grid.cols();
-    let mut visible: Grid<usize> = Grid::init(0, rows, cols);
+    let mut visible: Grid<u32> = Grid::init(0, rows, cols);
 
     GridPoint::new(0, 0)
         .traverse_by(SOUTH, 0, rows, 0, cols)

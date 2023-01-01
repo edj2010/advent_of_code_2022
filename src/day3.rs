@@ -2,16 +2,16 @@ use advent_of_code::parse::{parsers, ParseError, Parser};
 use itertools::Itertools;
 use std::collections::BTreeSet;
 
-fn score_char(c: u8) -> usize {
+fn score_char(c: u8) -> u32 {
     match c {
-        b'a'..=b'z' => (c - b'a') as usize + 1,
-        b'A'..=b'Z' => (c - b'A') as usize + 27,
-        _ => 0_usize,
+        b'a'..=b'z' => (c - b'a') as u32 + 1,
+        b'A'..=b'Z' => (c - b'A') as u32 + 27,
+        _ => 0_u32,
     }
 }
 
 #[allow(dead_code)]
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u32 {
     parsers::many_chars(|c| c != '\n')
         .bind(|s: String| {
             let first_half: BTreeSet<u8> = s[..(s.len() / 2)].bytes().collect();
@@ -30,7 +30,7 @@ pub fn part1(input: &str) -> usize {
 }
 
 #[allow(dead_code)]
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> u32 {
     parsers::many_chars(|c| c != '\n')
         .map(|l: String| l.bytes().collect::<BTreeSet<u8>>())
         .many_lines("\n")

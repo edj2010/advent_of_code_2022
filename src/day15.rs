@@ -13,19 +13,19 @@ macro_rules! parse {
             .ignore(
                 parsers::signed_number()
                     .pair(", y=", parsers::signed_number())
-                    .map(|(x, y)| GridPoint::new(y, x)),
+                    .map(|(x, y)| GridPoint::new(y as i64, x as i64)),
             )
             .skip_tag(": closest beacon is at x=")
             .and_then(
                 parsers::signed_number()
                     .pair(", y=", parsers::signed_number())
-                    .map(|(x, y)| GridPoint::new(y, x)),
+                    .map(|(x, y)| GridPoint::new(y as i64, x as i64)),
             )
             .many_lines("\n")
             .parse($input)
             .finish()
             .unwrap()
-            .collect::<HashMap<GridPoint<isize>, GridPoint<isize>>>()
+            .collect::<HashMap<GridPoint<i64>, GridPoint<i64>>>()
     };
 }
 
@@ -34,11 +34,11 @@ pub fn part1(input: &str) -> usize {
     part1_inner(input, 2_000_000)
 }
 
-fn part1_inner(input: &str, row: isize) -> usize {
+fn part1_inner(input: &str, row: i64) -> usize {
     let sensors = parse!(input);
-    let mut row_data: BTreeMap<isize, isize> = BTreeMap::new();
+    let mut row_data: BTreeMap<i64, i64> = BTreeMap::new();
     sensors.iter().for_each(|(sensor, beacon)| {
-        let dist = beacon.sub(*sensor).unwrap().l1_norm();
+        let dist = beacon.sub::<i64>(*sensor).unwrap().l1_norm();
         let y_dist = (row - sensor.row()).abs();
         if y_dist > dist {
             return;
@@ -50,7 +50,7 @@ fn part1_inner(input: &str, row: isize) -> usize {
     });
     row_data
         .iter()
-        .fold((isize::MIN, 0, 0), |(last_col, acc, sum), (col, adj)| {
+        .fold((i64::MIN, 0, 0), |(last_col, acc, sum), (col, adj)| {
             (
                 *col,
                 acc + adj,
@@ -67,20 +67,20 @@ fn part1_inner(input: &str, row: isize) -> usize {
                     None
                 }
             })
-            .collect::<BTreeSet<isize>>()
+            .collect::<BTreeSet<i64>>()
             .len()
 }
 
 #[allow(dead_code)]
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> i64 {
     part2_inner(input, 0, 4_000_000)
 }
 
-fn part2_inner(input: &str, min: isize, max: isize) -> usize {
+fn part2_inner(input: &str, min: i64, max: i64) -> i64 {
     let sensors = parse!(input);
-    let mut all_row_data: BTreeMap<isize, BTreeMap<isize, isize>> = BTreeMap::new();
+    let mut all_row_data: BTreeMap<i64, BTreeMap<i64, i64>> = BTreeMap::new();
     sensors.iter().for_each(|(sensor, beacon)| {
-        let dist = beacon.sub(*sensor).unwrap().l1_norm();
+        let dist = beacon.sub::<i64>(*sensor).unwrap().l1_norm();
         ((sensor.row() - dist)..=(sensor.row() + dist)).for_each(|row| {
             let y_dist = (row - sensor.row()).abs();
             if y_dist > dist {
@@ -108,7 +108,7 @@ fn part2_inner(input: &str, min: isize, max: isize) -> usize {
                 })
                 .1
         })
-        .unwrap() as usize
+        .unwrap()
 }
 
 #[test]

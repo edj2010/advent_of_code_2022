@@ -19,7 +19,7 @@ macro_rules! parse {
                     .skip_tag(" to ")
                     .and_then(parsers::number())
                     .skip_tag("\n")
-                    .map(|((a, b), c)| (a, b - 1, c - 1))
+                    .map(|((a, b), c)| (a as usize, (b - 1) as usize, (c - 1) as usize))
                     .many(),
             )
             .parse($input)

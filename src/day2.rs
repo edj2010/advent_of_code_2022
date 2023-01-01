@@ -1,7 +1,7 @@
 use advent_of_code::parse::{parsers, Parser};
 
 #[allow(dead_code)]
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u32 {
     parsers::char_any()
         .repeat(3)
         .map(|s| match s.collect::<String>().as_str() {
@@ -24,7 +24,7 @@ pub fn part1(input: &str) -> usize {
 }
 
 #[allow(dead_code)]
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> u32 {
     parsers::char_any()
         .repeat(3)
         .map(|s| match s.collect::<String>().as_str() {

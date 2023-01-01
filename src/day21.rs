@@ -1,5 +1,9 @@
 use advent_of_code::parse::{parsers, Parser};
 
+macro_rules! parse {
+    ($input: ident) => {};
+}
+
 #[allow(dead_code)]
 pub fn part1(input: &str) -> u32 {
     todo!()

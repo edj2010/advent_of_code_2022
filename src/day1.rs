@@ -1,7 +1,7 @@
 use advent_of_code::parse::{parsers, Parser};
 
 #[allow(dead_code)]
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u32 {
     parsers::number()
         .many_lines("\n")
         .list("\n")
@@ -14,8 +14,8 @@ pub fn part1(input: &str) -> usize {
 }
 
 #[allow(dead_code)]
-pub fn part2(input: &str) -> usize {
-    let mut calories: Vec<usize> = parsers::number()
+pub fn part2(input: &str) -> u32 {
+    let mut calories: Vec<u32> = parsers::number()
         .many_lines("\n")
         .list("\n")
         .parse(input)

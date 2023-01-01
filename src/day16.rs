@@ -26,11 +26,11 @@ macro_rules! parse {
             .parse($input)
             .finish()
             .unwrap()
-            .collect::<Vec<((String, usize), Vec<String>)>>()
+            .collect::<Vec<((String, u32), Vec<String>)>>()
     };
 }
 
-fn simplify_graph(graph: &HashMap<String, Vec<String>>) -> HashMap<String, HashMap<String, usize>> {
+fn simplify_graph(graph: &HashMap<String, Vec<String>>) -> HashMap<String, HashMap<String, u32>> {
     let weighted_graph = graph
         .into_iter()
         .map(|(k, v)| {
@@ -38,17 +38,17 @@ fn simplify_graph(graph: &HashMap<String, Vec<String>>) -> HashMap<String, HashM
                 k.clone(),
                 v.into_iter()
                     .map(|k2| (k2.clone(), 1))
-                    .collect::<HashMap<String, usize>>(),
+                    .collect::<HashMap<String, u32>>(),
             )
         })
-        .collect::<HashMap<String, HashMap<String, usize>>>();
+        .collect::<HashMap<String, HashMap<String, u32>>>();
     weighted_graph.all_pairs_shortest_paths(weighted_graph.keys().cloned(), 0)
 }
 
 fn filter_graph(
-    graph: &HashMap<String, HashMap<String, usize>>,
+    graph: &HashMap<String, HashMap<String, u32>>,
     desired_nodes: HashSet<String>,
-) -> HashMap<String, HashMap<String, usize>> {
+) -> HashMap<String, HashMap<String, u32>> {
     graph
         .into_iter()
         .filter_map(|(k, vs)| {
@@ -73,12 +73,12 @@ fn filter_graph(
 }
 
 fn explore(
-    graph: &HashMap<String, HashMap<String, usize>>,
-    valves: &HashMap<String, usize>,
+    graph: &HashMap<String, HashMap<String, u32>>,
+    valves: &HashMap<String, u32>,
     on: HashSet<String>,
     node: String,
-    time_left: usize,
-) -> usize {
+    time_left: u32,
+) -> u32 {
     match graph.get(&node) {
         None => 0,
         Some(adjacent) => adjacent
@@ -108,12 +108,12 @@ fn explore(
 }
 
 #[allow(dead_code)]
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u32 {
     let data = parse!(input);
     let valves = data
         .iter()
         .filter_map(|((k, v), _)| if *v > 0 { Some((k.clone(), *v)) } else { None })
-        .collect::<HashMap<String, usize>>();
+        .collect::<HashMap<String, u32>>();
     let graph = filter_graph(
         &simplify_graph(
             &data
@@ -131,12 +131,12 @@ pub fn part1(input: &str) -> usize {
 }
 
 #[allow(dead_code)]
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> u32 {
     let data = parse!(input);
     let valves = data
         .iter()
         .filter_map(|((k, v), _)| if *v > 0 { Some((k.clone(), *v)) } else { None })
-        .collect::<HashMap<String, usize>>();
+        .collect::<HashMap<String, u32>>();
     let graph = filter_graph(
         &simplify_graph(
             &data

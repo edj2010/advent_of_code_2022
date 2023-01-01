@@ -25,7 +25,7 @@ struct Mountain<F: Fn(u8, u8) -> bool> {
     adjacent_filter: F,
 }
 
-impl<F: Fn(u8, u8) -> bool> WeightedGraph<GridPoint<usize>, usize> for Mountain<F> {
+impl<F: Fn(u8, u8) -> bool> WeightedGraph<GridPoint<usize>, u32> for Mountain<F> {
     fn adjacent(&self, a: &GridPoint<usize>) -> Option<impl Iterator<Item = GridPoint<usize>>> {
         Some(
             PLUS_ADJACENT
@@ -41,13 +41,13 @@ impl<F: Fn(u8, u8) -> bool> WeightedGraph<GridPoint<usize>, usize> for Mountain<
         )
     }
 
-    fn weight(&self, _: &GridPoint<usize>, _: &GridPoint<usize>) -> Option<usize> {
+    fn weight(&self, _: &GridPoint<usize>, _: &GridPoint<usize>) -> Option<u32> {
         Some(1)
     }
 }
 
 #[allow(dead_code)]
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u32 {
     let map: Grid<u8> = parser!(input);
     let height_map = Grid::from(
         map.clone().into_iter().map(|c| {
@@ -76,7 +76,7 @@ pub fn part1(input: &str) -> usize {
 }
 
 #[allow(dead_code)]
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> u32 {
     let map: Grid<u8> = parser!(input);
     let height_map = Grid::from(
         map.clone().into_iter().map(|c| {

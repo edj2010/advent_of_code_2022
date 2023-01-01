@@ -2,13 +2,13 @@ use advent_of_code::parse::{parsers, Parser};
 
 #[derive(Debug, Clone, Copy)]
 enum Operation {
-    Add(usize),
-    Multiply(usize),
+    Add(u64),
+    Multiply(u64),
     Square,
 }
 
 impl Operation {
-    fn apply(self, item: usize) -> usize {
+    fn apply(self, item: u64) -> u64 {
         match self {
             Self::Add(n) => item + n,
             Self::Multiply(n) => item * n,
@@ -19,9 +19,9 @@ impl Operation {
 
 #[derive(Debug, Clone)]
 struct Monkey {
-    items: Vec<usize>,
+    items: Vec<u64>,
     operation: Operation,
-    divisor: usize,
+    divisor: u64,
     true_target_id: usize,
     false_target_id: usize,
 }
@@ -31,24 +31,24 @@ macro_rules! parse {
         parsers::tag("Monkey ")
             .ignore(parsers::number())
             .skip_tag(":\n  Starting items: ")
-            .and_then(parsers::number().list(", ").line("\n"))
+            .and_then(parsers::number().map(|n| n as u64).list(", ").line("\n"))
             .skip_tag("  Operation: new = old ")
             .and_then(
                 parsers::tag("+ ")
                     .ignore(parsers::number())
-                    .map(|n| Operation::Add(n))
+                    .map(|n| Operation::Add(n as u64))
                     .or(parsers::tag("* ")
                         .ignore(parsers::number())
-                        .map(|n| Operation::Multiply(n)))
+                        .map(|n| Operation::Multiply(n as u64)))
                     .or(parsers::tag("* old").map(|_| Operation::Square))
                     .line("\n"),
             )
             .skip_tag("  Test: divisible by ")
-            .and_then(parsers::number().line("\n"))
+            .and_then(parsers::number().line("\n").map(|n| n as u64))
             .skip_tag("    If true: throw to monkey ")
-            .and_then(parsers::number().line("\n"))
+            .and_then(parsers::number().line("\n").map(|n| n as usize))
             .skip_tag("    If false: throw to monkey ")
-            .and_then(parsers::number().line("\n"))
+            .and_then(parsers::number().line("\n").map(|n| n as usize))
             .map(
                 |(((((_id, list), operation), divisor), true_target_id), false_target_id)| Monkey {
                     items: list.collect(),
@@ -66,10 +66,10 @@ macro_rules! parse {
 }
 
 #[allow(dead_code)]
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u64 {
     let mut monkeys: Vec<Monkey> = parse!(input).collect();
     let monkey_count = monkeys.len();
-    let mut inspections: Vec<usize> = vec![0; monkey_count];
+    let mut inspections: Vec<u64> = vec![0; monkey_count];
     for _ in 0..20 {
         for monkey_idx in 0..monkey_count {
             let items = monkeys[monkey_idx].items.clone();
@@ -91,11 +91,11 @@ pub fn part1(input: &str) -> usize {
 }
 
 #[allow(dead_code)]
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> u64 {
     let mut monkeys: Vec<Monkey> = parse!(input).collect();
-    let modulus: usize = monkeys.iter().map(|monkey| monkey.divisor).product();
+    let modulus: u64 = monkeys.iter().map(|monkey| monkey.divisor).product();
     let monkey_count = monkeys.len();
-    let mut inspections: Vec<usize> = vec![0; monkey_count];
+    let mut inspections: Vec<u64> = vec![0; monkey_count];
     for _ in 0..10000 {
         for monkey_idx in 0..monkey_count {
             let items = monkeys[monkey_idx].items.clone();

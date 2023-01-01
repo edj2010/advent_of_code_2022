@@ -9,7 +9,7 @@ macro_rules! parse {
     ($input: ident) => {
         parsers::signed_number()
             .pair(",", parsers::signed_number())
-            .map(|(a, b)| GridPoint::new(a, b))
+            .map(|(a, b)| GridPoint::new(a as isize, b as isize))
             .list(" -> ")
             .map(|v| v.collect::<Vec<GridPoint<isize>>>())
             .many_lines("\n")
@@ -20,7 +20,7 @@ macro_rules! parse {
 }
 
 #[allow(dead_code)]
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u32 {
     let mut grid: Lattice<char> = Lattice::empty();
     let mut max_y: isize = 0;
     parse!(input).for_each(|line| {
@@ -53,7 +53,7 @@ pub fn part1(input: &str) -> usize {
 }
 
 #[allow(dead_code)]
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> u32 {
     let mut grid: Lattice<char> = Lattice::empty();
     let mut max_y: isize = 0;
     parse!(input).for_each(|line| {

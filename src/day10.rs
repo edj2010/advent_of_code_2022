@@ -3,7 +3,7 @@ use advent_of_code::parse::{parsers, Parser};
 #[derive(Debug, Clone, Copy)]
 enum Command {
     Noop,
-    Addx(isize),
+    Addx(i32),
 }
 
 macro_rules! parse {
@@ -21,7 +21,7 @@ macro_rules! parse {
 }
 
 #[allow(dead_code)]
-pub fn part1(input: &str) -> isize {
+pub fn part1(input: &str) -> i32 {
     parse!(input)
         .fold((1, 1, 0), |(x, idx, mut sum), instr| {
             if (idx - 20) % 40 == 0 {
@@ -38,8 +38,8 @@ pub fn part1(input: &str) -> isize {
 #[allow(dead_code)]
 pub fn part2(input: &str) -> String {
     let mut display: String = String::new();
-    parse!(input).enumerate().fold(1_isize, |x, (idx, instr)| {
-        let pos = (idx % 40) as isize;
+    parse!(input).enumerate().fold(1_i32, |x, (idx, instr)| {
+        let pos = (idx % 40) as i32;
         if pos == 0 {
             display.push('\n');
         }

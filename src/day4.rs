@@ -13,7 +13,7 @@ macro_rules! parse {
 }
 
 #[allow(dead_code)]
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u32 {
     parse!(input)
         .map(|((al, ar), (bl, br))| {
             if (al <= bl && ar >= br) || (al >= bl && ar <= br) {
@@ -26,7 +26,7 @@ pub fn part1(input: &str) -> usize {
 }
 
 #[allow(dead_code)]
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> u32 {
     parse!(input)
         .map(|((al, ar), (bl, br))| {
             if al <= br && ar >= bl || al >= br && ar <= bl {

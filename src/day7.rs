@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 #[allow(dead_code)]
 #[derive(Debug)]
 enum File {
-    File { name: PathBuf, size: usize },
+    File { name: PathBuf, size: u32 },
     Directory { name: PathBuf },
 }
 
@@ -16,7 +16,7 @@ impl File {
         }
     }
 
-    fn file(parent: &Path, name: &str, size: usize) -> Self {
+    fn file(parent: &Path, name: &str, size: u32) -> Self {
         Self::File {
             name: parent.join(name),
             size,
@@ -27,9 +27,9 @@ impl File {
 fn directory_sizes(
     directory: &Path,
     directories: &HashMap<PathBuf, Vec<File>>,
-) -> HashMap<PathBuf, usize> {
+) -> HashMap<PathBuf, u32> {
     let (mut map, size) = directories.get(directory).unwrap().iter().fold(
-        (HashMap::new(), 0_usize),
+        (HashMap::new(), 0_u32),
         |(mut map, this_size), file| match file {
             File::Directory { name } => {
                 map.extend(directory_sizes(name, directories));
@@ -45,7 +45,7 @@ fn directory_sizes(
 
 #[derive(Debug, PartialEq, Eq)]
 enum FileSpec {
-    File { name: String, size: usize },
+    File { name: String, size: u32 },
     Directory { name: String },
 }
 
@@ -110,7 +110,7 @@ macro_rules! parse {
 }
 
 #[allow(dead_code)]
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u32 {
     let directories = populate_directory(parse!(input));
     let directory_sizes = directory_sizes(Path::new("/"), &directories);
     directory_sizes
@@ -120,7 +120,7 @@ pub fn part1(input: &str) -> usize {
 }
 
 #[allow(dead_code)]
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> u32 {
     let directories = populate_directory(parse!(input));
     let directory_sizes = directory_sizes(Path::new("/"), &directories);
     let threshold = 30000000 - (70000000 - directory_sizes.get(&PathBuf::from("/")).unwrap());
