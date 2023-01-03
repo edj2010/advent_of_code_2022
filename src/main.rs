@@ -17,9 +17,12 @@ mod day16;
 mod day17;
 mod day18;
 mod day19;
-mod day21;
 mod day2;
 mod day20;
+mod day21;
+mod day22;
+mod day23;
+mod day24;
 mod day3;
 mod day4;
 mod day5;
@@ -34,9 +37,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         &fs::read_to_string("../session.cookie").expect("failed to read session id"),
         Path::new("inputs"),
     )?;
-    let input = client.query_question_input(20)?;
+    let input = client.query_question_input(23)?;
 
-    println!("{}", day20::part2(&input));
+    println!("{}", day23::part2(&input));
     Ok(())
 }
 
@@ -122,4 +125,7 @@ day17, day17_test, 17, 3130, 1556521739139;
 day18, day18_test, 18, 3498, 2008;
 day19, day19_test, 19, 1981, 10962;
 day20, day20_test, 20, 2215, 8927480683;
-day21, day21_test, 21, 0, 0;);
+day21, day21_test, 21, 194501589693264, 3887609741189;
+day22, day22_test, 22, 126350, 129339;
+day23, day23_test, 23, 3815, 893;
+day24, day24_test, 24, 0, 0;);
