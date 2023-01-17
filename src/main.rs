@@ -1,5 +1,6 @@
 #![feature(return_position_impl_trait_in_trait)]
 #![allow(incomplete_features)]
+#![feature(test)]
 
 use advent_of_code::web_api::AdventOfCode;
 use std::error::Error;
@@ -23,6 +24,7 @@ mod day21;
 mod day22;
 mod day23;
 mod day24;
+mod day25;
 mod day3;
 mod day4;
 mod day5;
@@ -37,9 +39,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         &fs::read_to_string("../session.cookie").expect("failed to read session id"),
         Path::new("inputs"),
     )?;
-    let input = client.query_question_input(23)?;
+    let input = client.query_question_input(25)?;
 
-    println!("{}", day23::part2(&input));
+    println!("{}", day25::part1(&input));
     Ok(())
 }
 
@@ -128,4 +130,5 @@ day20, day20_test, 20, 2215, 8927480683;
 day21, day21_test, 21, 194501589693264, 3887609741189;
 day22, day22_test, 22, 126350, 129339;
 day23, day23_test, 23, 3815, 893;
-day24, day24_test, 24, 0, 0;);
+day24, day24_test, 24, 225, 711;
+day25, day25_test, 25, "", 0;);
